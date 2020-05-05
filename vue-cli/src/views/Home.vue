@@ -1,15 +1,15 @@
 <template>
-  <div class="home"></div>
+  <div class="home">
+    <app-server v-for="server in 5" :key="server"></app-server>
+  </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
+import ServerStatus from "@/components/ServerStatus.vue";
 
 export default {
-  name: "Home",
   components: {
-    HelloWorld
+    "app-server": ServerStatus
   }
 };
 </script>
