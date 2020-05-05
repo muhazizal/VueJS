@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<title>VueJS</title>
+		<link rel="stylesheet" href="" />
+		<script src="vue.js"></script>
+	</head>
+	<body>
+		<div id="app">
+			<input type="text" v-model="name" />
+			<p>{{ name }}</p>
+
+			<button @click="counter++">Increase</button>
+			<button @click="counter--">Decrease</button>
+			<p>{{ counter }}</p>
+			<p>{{ result }}</p>
+		</div>
+		<script>
+			new Vue({
+				el: '#app',
+				data: {
+					name: 'muhazizal',
+					counter: 0,
+				},
+				computed: {
+					result: function () {
+						return this.counter > 5 ? 'Greater than 5' : 'Less than 5';
+					},
+				},
+				watch: {
+					counter: function (value) {
+						const vm = this;
+						setTimeout(function () {
+							vm.counter = 0;
+						}, 2000);
+					},
+				},
+				methods: {},
+			});
+		</script>
+	</body>
+</html>

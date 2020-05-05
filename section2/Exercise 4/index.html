@@ -1,0 +1,121 @@
+<script src="https://npmcdn.com/vue/dist/vue.js"></script>
+
+<style>
+	#effect {
+		width: 100px;
+		height: 100px;
+		border: 1px solid black;
+	}
+
+	.highlight {
+		background-color: red;
+		width: 200px !important;
+	}
+
+	.shrink {
+		background-color: gray;
+		width: 50px !important;
+	}
+
+	.blueContainer {
+		background-color: blue;
+	}
+
+	.whiteText {
+		color: white;
+	}
+
+	.box {
+		width: 100px;
+		height: 100px;
+	}
+
+	.progressBar {
+		width: 200px;
+		height: 20px;
+		border: 1px solid black;
+	}
+</style>
+
+<div id="exercise">
+	<!-- 1) Start the Effect with the Button. The Effect should alternate the "highlight" or "shrink" class on each new setInterval tick (attach respective class to the div with id "effect" below) -->
+	<div>
+		<button @click="startEffect">Start Effect</button>
+		<div id="effect" :class="effectClass"></div>
+	</div>
+
+	<!-- 2) Create a couple of CSS classes and attach them via the array syntax -->
+	<div :class="[blueContainer, whiteText]">I got no class :(</div>
+
+	<!-- 3) Let the user enter a class (create some example classes) and attach it -->
+	<div>
+		<input type="text" v-model="userClass" />
+		<div :class="[userClass, {box: true}]"></div>
+	</div>
+
+	<!-- 4) Let the user enter a class and enter true/ false for another class (create some example classes) and attach the classes -->
+	<div>
+		<input type="text" v-model="userClass" />
+		<input type="text" v-model="condition" />
+		<div :class="[userClass, {box: condition}]">user</div>
+	</div>
+
+	<!-- 5) Repeat 3) but now with values for styles (instead of class names). Attach the respective styles.  -->
+	<div>
+		<input type="text" v-model="style.backgroundColor" />
+		<div :style="style"></div>
+	</div>
+
+	<!-- 6) Create a simple progress bar with setInterval and style bindings. Start it by hitting the below button. -->
+	<div>
+		<button @click="startProgress">Start Progress</button>
+		<div :class="['progressBar']" :style="progressBar"></div>
+	</div>
+</div>
+
+<script>
+	new Vue({
+		el: '#exercise',
+
+		data: {
+			effectClass: {
+				highlight: false,
+				shrink: true,
+			},
+			blueContainer: 'blueContainer',
+			whiteText: 'whiteText',
+			userClass: '',
+			condition: 'false',
+			style: {
+				width: '100px',
+				height: '100px',
+				backgroundColor: 'pink',
+			},
+			progressBar: {
+				width: '0px',
+				backgroundColor: 'pink',
+			},
+		},
+
+		methods: {
+			startEffect: function () {
+				const vm = this;
+				setInterval(function () {
+					vm.effectClass.shrink = !vm.effectClass.shrink;
+					vm.effectClass.highlight = !vm.effectClass.highlight;
+				}, 1000);
+			},
+
+			startProgress: function () {
+				const vm = this;
+				let width = 0;
+				setInterval(function () {
+					if (width <= 200) {
+						width += 1;
+						vm.progressBar.width = width + 'px';
+					}
+				}, 10);
+			},
+		},
+	});
+</script>

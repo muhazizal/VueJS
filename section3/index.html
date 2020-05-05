@@ -1,0 +1,49 @@
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+
+<div id="app">
+	<p v-if="show">You can see me!</p>
+	<p v-else>Do you also see me?</p>
+
+	<template v-if="show">
+		<h3>Heading</h3>
+		<p>Lorem ipsum dolor sit amet.</p>
+	</template>
+
+	<p v-show="show">using v-show</p>
+	<button @click="show = !show">Toggle</button>
+	<hr />
+
+	<ul>
+		<li v-for="(number, i) in numbers" :key="number">{{ number }} - ({{ i }})</li>
+	</ul>
+	<button @click="numbers.push(0)">Add Number</button>
+	<hr />
+
+	<template v-for="person in persons" :key="person">
+		<span v-for="(value, key, index) in person">
+			<p>{{ key }}: {{ value }} - ({{ index }})</p>
+		</span>
+		<p>{{ person.name }}</p>
+		<p>{{ person.age }}</p>
+		<hr />
+	</template>
+
+	<ul>
+		<li v-for="n in 5">{{ n }}</li>
+	</ul>
+</div>
+
+<script>
+	new Vue({
+		el: '#app',
+		data: {
+			numbers: [1, 2, 3, 4, 5],
+			show: true,
+			persons: [
+				{ name: 'farah', age: 10 },
+				{ name: 'fina', age: 20 },
+				{ name: 'aziz', age: 20 },
+			],
+		},
+	});
+</script>
