@@ -1,172 +1,174 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Monster Slayer</title>
-		<script src="https://npmcdn.com/vue/dist/vue.js"></script>
-		<link rel="stylesheet" href="css/foundation.min.css" />
-		<link rel="stylesheet" href="css/app.css" />
-	</head>
-	<body>
-		<div id="app">
-			<section class="row">
-				<div class="small-6 columns">
-					<h1 class="text-center">YOU</h1>
-					<div class="healthbar">
-						<div
-							class="healthbar text-center"
-							style="background-color: green; margin: 0; color: white;"
-							:style="{width: playerHealth + '%'}"
-						>
-							{{ playerHealth }}
-						</div>
+
+<head>
+	<title>Monster Slayer</title>
+	<script src="https://npmcdn.com/vue/dist/vue.js"></script>
+	<link rel="stylesheet" href="css/foundation.min.css" />
+	<link rel="stylesheet" href="css/app.css" />
+</head>
+
+<body>
+	<div id="app">
+		<section class="row">
+			<div class="small-6 columns">
+				<h1 class="text-center">YOU</h1>
+				<div class="healthbar">
+					<div class="healthbar text-center" style="background-color: green; margin: 0; color: white;"
+						:style="{width: playerHealth + '%'}">
+						{{ playerHealth }}
 					</div>
 				</div>
-				<div class="small-6 columns">
-					<h1 class="text-center">MONSTER</h1>
-					<div class="healthbar">
-						<div
-							class="healthbar text-center"
-							style="background-color: green; margin: 0; color: white;"
-							:style="{width: monsterHealth + '%'}"
-						>
-							{{ monsterHealth }}
-						</div>
+			</div>
+			<div class="small-6 columns">
+				<h1 class="text-center">MONSTER</h1>
+				<div class="healthbar">
+					<div class="healthbar text-center" style="background-color: green; margin: 0; color: white;"
+						:style="{width: monsterHealth + '%'}">
+						{{ monsterHealth }}
 					</div>
 				</div>
-			</section>
-			<section class="row controls" v-if="!isGameStarted">
-				<div class="small-12 columns">
-					<button id="start-game" @click="startGame()">START NEW GAME</button>
-				</div>
-			</section>
-			<section class="row controls" v-else>
-				<div class="small-12 columns">
-					<button id="attack" @click="attack()">ATTACK</button>
-					<button id="special-attack" @click="specialAttack()">SPECIAL ATTACK</button>
-					<button id="heal" @click="heal()">HEAL</button>
-					<button id="give-up" @click="giveUp()">GIVE UP</button>
-				</div>
-			</section>
+			</div>
+		</section>
+		<section class="row controls" v-if="!isGameStarted">
+			<div class="small-12 columns">
+				<button id="start-game" @click="startGame()">START NEW GAME</button>
+			</div>
+		</section>
+		<section class="row controls" v-else>
+			<div class="small-12 columns">
+				<button id="attack" @click="attack()">ATTACK</button>
+				<button id="special-attack" @click="specialAttack()">SPECIAL ATTACK</button>
+				<button id="heal" @click="heal()">HEAL</button>
+				<button id="give-up" @click="giveUp()">GIVE UP</button>
+			</div>
+		</section>
+		<transition name="slide">
 			<section class="row log" v-if="actions.length > 0">
 				<div class="small-12 columns">
 					<ul>
-						<li v-for="action in actions" :class="{'player-turn': action.isPlayer, 'monster-turn': !action.isPlayer}">
-							{{ action.text }}
-						</li>
+						<transition-group name="slide" mode="out-in">
+							<li v-for="action in actions" :key="action"
+								:class="{'player-turn': action.isPlayer, 'monster-turn': !action.isPlayer}">
+								{{ action.text }}
+							</li>
+						</transition-group>
 					</ul>
 				</div>
 			</section>
-		</div>
+		</transition>
+	</div>
 
-		<script>
-			new Vue({
-				el: '#app',
-				data: {
-					playerHealth: 100,
-					monsterHealth: 100,
-					isGameStarted: false,
-					actions: [],
+	<script>
+		new Vue({
+			el: '#app',
+			data: {
+				playerHealth: 100,
+				monsterHealth: 100,
+				isGameStarted: false,
+				actions: [],
+			},
+			methods: {
+				startGame: function () {
+					this.isGameStarted = true;
+					this.playerHealth = 100;
+					this.monsterHealth = 100;
+					this.actions = [];
 				},
-				methods: {
-					startGame: function () {
-						this.isGameStarted = true;
+
+				attack: function () {
+					let damage = this.calculateDamage(3, 6);
+					this.monsterHealth -= damage;
+					this.actions.unshift({
+						isPlayer: true,
+						text: `Player hit The Monster for ${damage} damage!`,
+					});
+					if (this.checkHealth()) {
+						return;
+					}
+
+					this.monsterAttack();
+				},
+
+				specialAttack: function () {
+					let damage = this.calculateDamage(5, 10);
+					this.monsterHealth -= damage;
+					this.actions.unshift({
+						isPlayer: true,
+						text: `Player hit The Monster for ${damage} damage!`,
+					});
+					if (this.checkHealth()) {
+						return;
+					}
+
+					this.monsterAttack();
+				},
+
+				heal: function () {
+					if (this.playerHealth == 100) {
+						this.playerHealth += 0;
+					} else if (this.playerHealth > 90 && this.playerHealth < 100) {
+						let heal = 100 - this.playerHealth;
+						this.playerHealth += heal;
+						this.actions.unshift({
+							isPlayer: true,
+							text: `Player heal for ${heal} health!`,
+						});
+					} else {
+						let heal = 10;
+						this.playerHealth += heal;
+						this.actions.unshift({
+							isPlayer: true,
+							text: `Player heal for ${heal} health!`,
+						});
+					}
+					this.monsterAttack();
+				},
+
+				giveUp: function () {
+					if (confirm('Are your sure want to give up?')) {
+						this.isGameStarted = false;
 						this.playerHealth = 100;
 						this.monsterHealth = 100;
 						this.actions = [];
-					},
-
-					attack: function () {
-						let damage = this.calculateDamage(3, 6);
-						this.monsterHealth -= damage;
-						this.actions.unshift({
-							isPlayer: true,
-							text: `Player hit The Monster for ${damage} damage!`,
-						});
-						if (this.checkHealth()) {
-							return;
-						}
-
-						this.monsterAttack();
-					},
-
-					specialAttack: function () {
-						let damage = this.calculateDamage(5, 10);
-						this.monsterHealth -= damage;
-						this.actions.unshift({
-							isPlayer: true,
-							text: `Player hit The Monster for ${damage} damage!`,
-						});
-						if (this.checkHealth()) {
-							return;
-						}
-
-						this.monsterAttack();
-					},
-
-					heal: function () {
-						if (this.playerHealth == 100) {
-							this.playerHealth += 0;
-						} else if (this.playerHealth > 90 && this.playerHealth < 100) {
-							let heal = 100 - this.playerHealth;
-							this.playerHealth += heal;
-							this.actions.unshift({
-								isPlayer: true,
-								text: `Player heal for ${heal} health!`,
-							});
-						} else {
-							let heal = 10;
-							this.playerHealth += heal;
-							this.actions.unshift({
-								isPlayer: true,
-								text: `Player heal for ${heal} health!`,
-							});
-						}
-						this.monsterAttack();
-					},
-
-					giveUp: function () {
-						if (confirm('Are your sure want to give up?')) {
-							this.isGameStarted = false;
-							this.playerHealth = 100;
-							this.monsterHealth = 100;
-							this.actions = [];
-						}
-					},
-
-					monsterAttack: function () {
-						let damage = this.calculateDamage(5, 10);
-						this.playerHealth -= damage;
-						this.actions.unshift({
-							isPlayer: false,
-							text: `Monster hit Player for ${damage} damage!`,
-						});
-						this.checkHealth();
-					},
-
-					calculateDamage: function (min, max) {
-						return Math.max(Math.floor(Math.random() * max) + 1, min);
-					},
-
-					checkHealth: function () {
-						if (this.monsterHealth <= 0) {
-							if (confirm('You Won! Start a New Game?')) {
-								this.startGame();
-							} else {
-								this.isGameStarted = false;
-							}
-							return true;
-						} else if (this.playerHealth <= 0) {
-							if (confirm('You Lost! Start a New Game?')) {
-								this.startGame();
-							} else {
-								this.isGameStarted = false;
-							}
-							return true;
-						}
-						return false;
-					},
+					}
 				},
-			});
-		</script>
-	</body>
+
+				monsterAttack: function () {
+					let damage = this.calculateDamage(5, 10);
+					this.playerHealth -= damage;
+					this.actions.unshift({
+						isPlayer: false,
+						text: `Monster hit Player for ${damage} damage!`,
+					});
+					this.checkHealth();
+				},
+
+				calculateDamage: function (min, max) {
+					return Math.max(Math.floor(Math.random() * max) + 1, min);
+				},
+
+				checkHealth: function () {
+					if (this.monsterHealth <= 0) {
+						if (confirm('You Won! Start a New Game?')) {
+							this.startGame();
+						} else {
+							this.isGameStarted = false;
+						}
+						return true;
+					} else if (this.playerHealth <= 0) {
+						if (confirm('You Lost! Start a New Game?')) {
+							this.startGame();
+						} else {
+							this.isGameStarted = false;
+						}
+						return true;
+					}
+					return false;
+				},
+			},
+		});
+	</script>
+</body>
+
 </html>
