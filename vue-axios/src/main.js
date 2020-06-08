@@ -5,7 +5,7 @@ import App from './App.vue';
 import router from './router';
 import store from './store';
 
-// axios.defaults.baseURL = 'https://vue-axios-484fe.firebaseio.com';
+// axios.defaults.baseURL = 'https://identitytoolkit.googleapis.com/v1';
 // axios.defaults.headers.common['Authorization'] = 'Auth';
 // axios.defaults.headers.get['Accepts'] = 'application/json';
 
