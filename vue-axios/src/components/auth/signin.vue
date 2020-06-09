@@ -26,6 +26,7 @@ export default {
       password: ""
     };
   },
+
   methods: {
     onSubmit() {
       const formData = {
