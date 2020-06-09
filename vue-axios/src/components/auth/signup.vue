@@ -51,8 +51,6 @@
 </template>
 
 <script>
-import axios from "../../auth";
-
 export default {
   data() {
     return {
@@ -87,16 +85,10 @@ export default {
         terms: this.terms
       };
       console.log(formData);
-      axios
-        .post(`/accounts:signUp?key=AIzaSyCy_8LSBuAabAnzT8-xgc2wHMItYoI87Bo`, {
-          email: formData.email,
-          password: formData.password,
-          returnSecureToken: true
-        })
-        .then(response => {
-          console.log(response);
-        })
-        .catch(error => console.log("error"));
+      this.$store.dispatch("signup", {
+        email: formData.email,
+        password: formData.password
+      });
     }
   }
 };
