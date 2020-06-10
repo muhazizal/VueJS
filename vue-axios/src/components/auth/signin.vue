@@ -34,7 +34,7 @@ export default {
         password: this.password
       };
       console.log(formData);
-      this.$store.dispatch("signin", {
+      this.$store.dispatch("login", {
         email: formData.email,
         password: formData.password
       });

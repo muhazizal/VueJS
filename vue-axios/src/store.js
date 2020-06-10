@@ -1,7 +1,9 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import axios from './auth';
+import axios from './axios-auth';
 import globalAxios from 'axios';
+
+import router from './router';
 
 Vue.use(Vuex);
 
@@ -21,56 +23,113 @@ export default new Vuex.Store({
 		storeUser(state, user) {
 			state.user = user;
 		},
+
+		clearAuthData(state) {
+			state.idToken = null;
+			state.userId = null;
+		},
 	},
 
 	actions: {
+		autoLogout({ commit }, timeout) {
+			setTimeout(() => {
+				commit('clearAuthData');
+				localStorage.removeItem('token');
+				localStorage.removeItem('userId');
+				localStorage.removeItem('expirationDate');
+				router.replace('/');
+			}, timeout);
+		},
+
+		autoLogin({ commit }) {
+			const token = localStorage.getItem('token');
+			if (!token) {
+				return;
+			}
+			const expirationDate = localStorage.getItem('expirationDate');
+			const now = new Date();
+			if (now >= expirationDate) {
+				return;
+			}
+			const userId = localStorage.getItem('userId');
+			commit('authUser', {
+				token: token,
+				userId: userId,
+			});
+		},
+
 		signup({ commit, dispatch }, authData) {
 			axios
-				.post(`/accounts:signUp?key=AIzaSyCy_8LSBuAabAnzT8-xgc2wHMItYoI87Bo`, {
+				.post('/accounts:signUp?key=AIzaSyCy_8LSBuAabAnzT8-xgc2wHMItYoI87Bo', {
 					email: authData.email,
 					password: authData.password,
 					returnSecureToken: true,
 				})
-				.then(response => {
-					console.log(response);
+				.then(res => {
+					console.log(res);
 					commit('authUser', {
-						token: response.data.idToken,
-						userId: response.data.localId,
+						token: res.data.idToken,
+						userId: res.data.localId,
 					});
 					dispatch('storeUser', authData);
+					dispatch('autoLogout', res.data.expiresIn);
 				})
 				.catch(error => console.log(error));
 		},
 
-		signin({ commit }, authData) {
+		login({ commit, dispatch }, authData) {
 			axios
-				.post(`/accounts:signInWithPassword?key=AIzaSyCy_8LSBuAabAnzT8-xgc2wHMItYoI87Bo`, {
+				.post('/accounts:signInWithPassword?key=AIzaSyCy_8LSBuAabAnzT8-xgc2wHMItYoI87Bo', {
 					email: authData.email,
 					password: authData.password,
 					returnSecureToken: true,
 				})
-				.then(response => {
-					console.log(response);
+				.then(res => {
+					console.log(res);
+					// store data in local storage
+					const now = new Date();
+					const expirationDate = new Date(now.getTime() + res.data.expiresIn * 1000);
+					localStorage.setItem('token', res.data.idToken);
+					localStorage.setItem('userId', res.data.localId);
+					localStorage.setItem('expirationDate', expirationDate);
+
 					commit('authUser', {
-						token: response.data.idToken,
-						userId: response.data.localId,
+						token: res.data.idToken,
+						userId: res.data.localId,
 					});
+					router.replace('/dashboard');
+					// dispatch('autoLogout', res.data.expiresIn);
 				})
 				.catch(error => console.log(error));
 		},
 
-		storeUser({ commit }, userData) {
+		logout({ commit }) {
+			commit('clearAuthData');
+			localStorage.removeItem('token');
+			localStorage.removeItem('userId');
+			localStorage.removeItem('expirationDate');
+			router.replace('/');
+		},
+
+		storeUser({ commit, state }, userData) {
+			if (!state.idToken) {
+				return;
+			}
 			globalAxios
-				.post('/users.json', userData)
-				.then(response => console.log(response))
+				.post('/users.json' + '?auth=' + state.idToken, userData)
+				.then(res => console.log(res))
 				.catch(error => console.log(error));
 		},
 
-		fetchUser({ commit }) {
+		fetchUser({ commit, state }) {
+			if (!state.idToken) {
+				return;
+			}
 			globalAxios
-				.get('/users.json')
-				.then(response => {
-					const data = response.data;
+				.get('/users.json' + '?auth=' + state.idToken)
+				.then(res => {
+					console.log(res);
+					const data = res.data;
 					const users = [];
 					for (let key in data) {
 						const user = data[key];
@@ -85,8 +144,12 @@ export default new Vuex.Store({
 	},
 
 	getters: {
-		user() {
+		user(state) {
 			return state.user;
+		},
+
+		isAuth(state) {
+			return state.idToken !== null;
 		},
 	},
 });

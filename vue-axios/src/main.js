@@ -5,19 +5,21 @@ import axios from 'axios';
 import router from './router';
 import store from './store';
 
-axios.defaults.baseURL = 'https://identitytoolkit.googleapis.com/v1';
-// axios.defaults.headers.common['Authorization'] = 'Auth';
-// axios.defaults.headers.get['Accepts'] = 'application/json';
+axios.defaults.baseURL = 'https://vue-axios-484fe.firebaseio.com/';
+// axios.defaults.headers.common['Authorization'] = 'fasfdsa'
+axios.defaults.headers.get['Accepts'] = 'application/json';
 
-// const reqInterceptor = axios.interceptors.request.use(config => {
-// 	console.log('Request Interceptors', config);
-// 	return config;
-// });
+const reqInterceptor = axios.interceptors.request.use(config => {
+	console.log('Request Interceptor', config);
+	return config;
+});
+const resInterceptor = axios.interceptors.response.use(res => {
+	console.log('Response Interceptor', res);
+	return res;
+});
 
-// const resInterceptors = axios.interceptors.response.use(response => {
-// 	console.log('Response Interceptors', response);
-// 	return response;
-// });
+axios.interceptors.request.eject(reqInterceptor);
+axios.interceptors.response.eject(resInterceptor);
 
 new Vue({
 	el: '#app',
