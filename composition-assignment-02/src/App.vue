@@ -25,7 +25,7 @@
 import { ref, computed, watch } from 'vue';
 export default {
   setup() {
-    const availableFunds = ref(100);
+    const availableFunds = 100;
     const currentExpenses = ref(0);
     const enteredExpense = ref(0);
 
