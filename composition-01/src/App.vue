@@ -3,13 +3,13 @@
     <h2>Fullname: {{ fullname }}</h2>
     <p>Age: {{ age }}</p>
     <hr />
-    <button @click="setAge">Change Age</button><br /><br />
-    <input
-      v-model="firstname"
-      type="text"
-      placeholder="Input Firstname"
-    /><br /><br />
-    <input v-model="lastname" type="text" placeholder="Input Lastname" />
+    <button @click="setAge">Change Age</button>
+    <br /><br /><br /><br />
+    <input v-model="firstname" type="text" placeholder="Input Firstname" />
+    <br /><br />
+    <input ref="lastnameInput" type="text" placeholder="Input Lastname" />
+    <br /><br />
+    <button @click="setLastname">Set Lastname</button>
   </section>
 </template>
 
@@ -20,6 +20,7 @@ export default {
   setup() {
     const firstname = ref('');
     const lastname = ref('');
+    const lastnameInput = ref(null);
     const age = ref(21);
     // const user = reactive({
     //   name: 'Muhammad Aziz Al-assad',
@@ -45,7 +46,19 @@ export default {
     //   lastname.value = event.target.value;
     // };
 
-    return { fullname, firstname, lastname, age, setAge };
+    const setLastname = () => {
+      lastname.value = lastnameInput.value.value;
+    };
+
+    return {
+      fullname,
+      firstname,
+      lastname,
+      lastnameInput,
+      setLastname,
+      age,
+      setAge
+    };
   }
 };
 </script>
