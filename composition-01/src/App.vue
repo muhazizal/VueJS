@@ -1,10 +1,6 @@
 <template>
   <section class="container">
-    <user-data
-      :firstname="firstname"
-      :lastname="lastname"
-      :age="age"
-    ></user-data>
+    <user-data :firstname="firstname" :lastname="lastname"></user-data>
     <hr />
     <button @click="setAge">Change Age</button>
     <br /><br /><br /><br />
@@ -17,7 +13,7 @@
 </template>
 
 <script>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, provide } from 'vue';
 import UserData from './components/UserData.vue';
 // import { reactive } from 'vue';
 export default {
@@ -34,16 +30,18 @@ export default {
     //   age: 21
     // });
 
-    const fullname = computed(() => `${firstname.value} ${lastname.value}`);
+    provide('userAge', age);
 
-    const setAge = () => {
-      age.value = 22;
-    };
+    const fullname = computed(() => `${firstname.value} ${lastname.value}`);
 
     watch([age, fullname], (newValue, oldValue) => {
       console.log('new value:', newValue);
       console.log('old value:', oldValue);
     });
+
+    const setAge = () => {
+      age.value += 1;
+    };
 
     // const setFirstname = event => {
     //   firstname.value = event.target.value;
