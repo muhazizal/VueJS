@@ -21,7 +21,7 @@ export default {
     const fullname = computed(() => `${props.firstname} ${props.lastname}`);
     const age = inject('userAge');
 
-    // context.$emit('on-something', null);
+    // context.emit('on-something', null);
 
     onBeforeMount(() => {
       console.log('onBeforeMount');
