@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, toRefs } from 'vue';
 
 import ProjectItem from './ProjectItem.vue';
 
@@ -33,7 +33,7 @@ export default {
   setup(props) {
     const enteredSearchTerm = ref('');
     const activeSearchTerm = ref('');
-    const user = ref(props.user);
+    const { user } = toRefs(props);
 
     const availableProjects = computed(() => {
       if (activeSearchTerm.value) {
