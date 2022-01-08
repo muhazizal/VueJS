@@ -8,6 +8,7 @@
 <script>
 export default {
   props: ['id', 'userName'],
+  emits: ['list-projects'],
   setup(props, context) {
     const viewProjects = () => {
       context.emit('list-projects', props.id);
@@ -17,7 +18,6 @@ export default {
       viewProjects,
     };
   },
-  // emits: ['list-projects'],
   // methods: {
   //   viewProjects() {
   //     this.$emit('list-projects', this.id);

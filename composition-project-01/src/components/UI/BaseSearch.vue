@@ -12,6 +12,7 @@
 <script>
 export default {
   props: ['searchTerm'],
+  emits: ['search'],
   setup(_props, context) {
     const search = (event) => {
       context.emit('search', event.target.value);
@@ -21,7 +22,6 @@ export default {
       search,
     };
   },
-  // emits: ['search'],
   // methods: {
   //   search(event) {
   //     this.$emit('search', event.target.value);
