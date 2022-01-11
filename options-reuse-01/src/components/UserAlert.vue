@@ -1,28 +1,28 @@
 <template>
-  <div class="backdrop" @click="closeDialog"></div>
-  <dialog open>
-    <header>
-      <h2>{{ title }}</h2>
-    </header>
-    <div>
-      <slot></slot>
-    </div>
-    <menu>
-      <button @click="closeDialog">Close</button>
-    </menu>
-  </dialog>
+  <div>
+    <div class="backdrop" @click="closeDialog"></div>
+    <dialog open>
+      <header>
+        <h2>{{ title }}</h2>
+      </header>
+      <div>
+        <slot></slot>
+      </div>
+      <menu>
+        <button @click="closeDialog">Close</button>
+      </menu>
+    </dialog>
+  </div>
 </template>
 
 <script>
 export default {
   props: ['title'],
   emits: ['close'],
-  setup(_, context) {
-    function closeDialog() {
-      context.emit('close');
-    }
-
-    return { closeDialog };
+  methods: {
+    closeDialog() {
+      this.$emit('close');
+    },
   },
 };
 </script>
